@@ -173,6 +173,14 @@ void Element::SetProperty(char const * k, double v, int dc)
     SetProperty(k, vcstr);
 }
 
+char * const Element::GetProperty(char const * key)
+{
+    for (int i = 0; i < prpLen; ++i)
+        if (std::strcmp(prpK[i], key) == 0)
+            return prpV[i];
+    return nullptr;
+}
+
 void Element::RemoveProperty(char const * k)
 {
     for (int i = 0; i < prpLen; ++i)

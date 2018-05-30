@@ -71,7 +71,7 @@ void Test_StrToEl()
 void Test_Document_ReadFromFile()
 {
     Document doc("test.xml");
-    doc.ReadFromFile();
+    doc.ReadFromFile("block_we_need", "tag_we_need");
 
     std::cout << std::endl << "From document:" << std::endl;
     for (int i = 0; i < doc.GetElementCout(); ++i)
@@ -81,13 +81,41 @@ void Test_Document_ReadFromFile()
         std::cout << "\t" << repr << std::endl;
         delete[] repr;
     }
+
+    doc.RemoveElement("key_1", "key_10");
+
+    std::cout << std::endl << "From document after removing:" << std::endl;
+    for (int i = 0; i < doc.GetElementCout(); ++i)
+    {
+        Element* e = doc.GetElementPtrs()[i];
+        char* repr = e->Represent();
+        std::cout << "\t" << repr << std::endl;
+        delete[] repr;
+    }
+
+    Element el;
+    el.SetName("some-element");
+    el.SetText("topkek");
+    el.SetProperty("prp_1", 1);
+
+    doc.AddElement(std::move(el));
+
+    std::cout << std::endl << "From document after adding:" << std::endl;
+    for (int i = 0; i < doc.GetElementCout(); ++i)
+    {
+        Element* e = doc.GetElementPtrs()[i];
+        char* repr = e->Represent();
+        std::cout << "\t" << repr << std::endl;
+        delete[] repr;
+    }
+
 }
 
 int main()
 {
     //Test_ElementSetProperties();
     //Test_Document_CreateFillAndFlush();
-    Test_StrToEl();
+    //Test_StrToEl();
     Test_Document_ReadFromFile();
     return 0;
 }

@@ -20,6 +20,7 @@ public:
     void        SetProperty(char const* propertyKey, char const* properyValue);
     void        SetProperty(char const* propertyKey, int properyValue, int radix = 10);
     void        SetProperty(char const* propertyKey, double properyValue, int digitCount = 5);
+    char* const GetProperty(char const* propertyKey);
 
     void        RemoveProperty(char const* propertyKey);
 

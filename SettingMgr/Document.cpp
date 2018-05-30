@@ -2,6 +2,7 @@
 #include "Element.h"
 #define _CRT_SECURE_NO_WARNINGS
 #include <cstring>
+#include <cctype>
 #include <utility>
 #include <fstream>
 #include <sstream>
@@ -48,6 +49,8 @@ void Document::AddElement(Element * el)
 
     if (elemLen < elemRes)
     {
+        // EXPL
+        // if elems[i]->key = el->key => swap ?
         pelems[elemLen++] = el;
     }
     else
@@ -63,10 +66,6 @@ void Document::AddElement(Element * el)
         AddElement(el);
     }
 }
-void Document::AddElement(char const * elName)
-{
-    AddElement(new Element(elName));
-}
 void Document::AddElement(Element const & obj)
 {
     AddElement(new Element(obj));
@@ -75,26 +74,46 @@ void Document::AddElement(Element && obj)
 {
     AddElement(new Element(std::move(obj)));
 }
-
-Element* Document::GetElement(char const * elName)
+Element * Document::GetElement(char const * key)
 {
     for (int i = 0; i < elemLen; ++i)
-        if (not std::strcmp(pelems[i]->GetName(), elName))
-            return pelems[i];
+    {
+        Element * p = pelems[i];
+        char* ppv = p->GetProperty(key);
+        if (ppv)
+            return p;
+    }
+
+    return nullptr;
+}
+Element * Document::GetElement(char const * key, char const * val)
+{
+    for (int i = 0; i < elemLen; ++i)
+    {
+        Element * p = pelems[i];
+
+        char* ppv = p->GetProperty(key);
+        if (ppv and not std::strcmp(ppv, val))
+            return p;
+    }
 
     return nullptr;
 }
 
-void Document::RemoveElement(char const * elName)
+void Document::RemoveElement(char const* key, char const* val)
 {
     for (int i = 0; i < elemLen; ++i)
-        if (not std::strcmp(pelems[i]->GetName(), elName))
+    {
+        Element * p = pelems[i];
+
+        char* ppv = p->GetProperty(key);
+        if (ppv and not std::strcmp(ppv, val))
         {
             delete pelems[i];
             --elemLen;
             pelems[i] = pelems[elemLen];
-            //pelems[elemLen] = nullptr;
         }
+    }
 }
 
 size_t Document::GetElementCout() const
@@ -121,7 +140,7 @@ void Document::FlushToFile()
 
 char * SkipWhiteSpaces(char* ptr)
 {
-    while (*ptr == ' ')
+    while (std::isspace(*ptr))
         ++ptr;
     return ptr;
 }
@@ -214,6 +233,46 @@ Element* CharPtrToElem(char* ptr)
     return elem;
 }
 
+
+void Document::ReadFromFile(const char * block, const char* tag)
+{
+    std::ifstream file(name, std::ios::in);
+    char buff[1024];
+    
+    char blockOp[1024];
+    char blockCl[1024];
+    sprintf(blockOp, "<%s>", block);
+    sprintf(blockCl, "</%s>", block);
+
+    while (not file.eof())
+    {
+        file.getline(buff, _countof(buff));
+        
+        if (not std::strlen(buff))
+            continue;
+
+        // find block op
+        if (not std::strcmp(buff, blockOp))
+        {
+            while (not file.eof())
+            {
+                file.getline(buff, _countof(buff));
+
+                if (not std::strlen(buff))
+                    continue;
+
+                if (not std::strcmp(buff, blockCl))
+                    break;
+                
+                Element* el = CharPtrToElem(buff);
+                if (not std::strcmp(el->GetName(), tag))
+                    AddElement(el);
+                else
+                    delete el;
+            }
+        }
+    }
+}
 
 void Document::ReadFromFile()
 {

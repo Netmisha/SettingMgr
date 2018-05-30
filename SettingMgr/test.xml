@@ -1,11 +1,28 @@
-<elem_1 el_prop_1="1." el_Prop_2="2.0">kek</elem_1>
-<elem_2 el_Prop_1="1." el_prop_2="2.0"></elem_2>
-		<   elem_3    el_Prop_1  =   "1."    el_prop_2  =  "2.0"  >
-		aksdlajsdlka
-			adlakjsdlajskd
-			
-			asdasd
-			</elem_3>
-</elem_4>
-</elem_5 el_Prop_1="1.">
-</elem_6 el_Prop_1="1." el_prop_2="2.0">
+
+</some_tag>
+
+<block_we_need>
+<tag_we_need key_1 = "key_1"></tag_we_need>
+
+<tag_we_skip> this one we skip </tag_we_skip>
+<tag_we_need key_2 = "key_2"> some text </tag_we_need>
+
+<tag_we_skip key_1 = "key_1"></tag_we_skip>
+</block_we_need>
+
+
+<block_we_skip>
+
+<tag_we_need key_3 = 3> this one is gonna be skipped</tag_we_need>
+
+
+</block_we_skip>
+
+<block_we_need>
+<tag_we_need key_1 = "key_10"></tag_we_need>
+
+<tag_we_skip> this one we skip </tag_we_skip>
+<tag_we_need key_2 = "key_20"> some text </tag_we_need>
+
+<tag_we_skip key_1 = "key_11"></tag_we_skip>
+</block_we_need>
