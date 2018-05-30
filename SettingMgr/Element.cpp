@@ -6,22 +6,44 @@
 #include <cassert>
 #include <cstdio>
 
-Element::Element(char * name, char * text, size_t propReserve):
+Element::Element(char const* name, char const* text, size_t propReserve):
+    name(nullptr),
+    text(nullptr),
     prpLen(0),
     prpRes(propReserve)
 {
     if (name)
         SetName(name);
-    else
-        this->name = nullptr;
 
     if (text)
         SetText(text);
-    else
-        this->text = nullptr;
 
     prpK = new char*[prpRes];
     prpV = new char*[prpRes];
+}
+
+Element::Element(Element const & obj):
+    Element(obj.name, obj.text, obj.prpRes)
+{
+    for (int i = 0; i < obj.prpLen; ++i)
+    {
+        SetProperty(obj.prpK[i], obj.prpV[i]);
+    }
+}
+
+Element::Element(Element&& src):
+    name(src.name),
+    text(src.text),
+    prpK(src.prpK),
+    prpV(src.prpV),
+    prpLen(src.prpLen),
+    prpRes(src.prpRes)
+{
+    src.name = nullptr;
+    src.text = nullptr;
+    src.prpK = new char*[prpRes];
+    src.prpV = new char*[prpRes];
+    src.prpLen = 0;
 }
 
 Element::~Element()
@@ -40,26 +62,45 @@ Element::~Element()
     delete[] prpV;
 }
 
-void Element::SetName(char const* name)
+void SetStr(char* &dst, char const* src) 
 {
-    this->name = new char[std::strlen(name) + 1];
-    std::strcpy(this->name, name);
+    size_t srcLen = std::strlen(src);
+    
+    bool realloc = false;
+    {
+        if (not dst)
+            realloc = true;
+        else
+            if (std::strlen(dst) < srcLen)
+            {
+                delete[] dst;
+                realloc = true;
+            }
+    }
+    if (realloc)
+        dst = new char[srcLen + 1];
+
+    std::strcpy(dst, src);
+}
+
+void Element::SetName(char const* str)
+{
+    SetStr(name, str);
 }
 
 char*const Element::GetName() const
 {
-    return const_cast<char*const>(name);
+    return name;
 }
 
 void Element::SetText(char const * val)
 {
-    this->text = new char[std::strlen(val) + 1];
-    std::strcpy(text, val);
+    SetStr(text, val);
 }
 
-char * const Element::GetText() const
+char*const Element::GetText() const
 {
-    return const_cast<char*const>(text);
+    return text;
 }
 
 size_t Element::GetPropertyCount() const
@@ -69,12 +110,12 @@ size_t Element::GetPropertyCount() const
 
 char** const Element::GetPropertyKeys() const
 {
-    return const_cast<char**const>(prpK);
+    return prpK;
 }
 
 char** const Element::GetPropertyVals() const
 {
-    return const_cast<char**const>(prpV);
+    return prpV;
 }
 
 void Element::SetProperty(char const* key, char const* val)
@@ -86,20 +127,15 @@ void Element::SetProperty(char const* key, char const* val)
         {
             if (std::strcmp(prpK[i], key) == 0)
             {
-                if (std::strlen(prpV[i]) < std::strlen(val))
-                {
-                    delete[] prpV[i];
-                    prpV[i] = new char[std::strlen(val) + 1];
-                }
-                std::strcpy(prpV[i], val);
+                SetStr(prpV[i], val);
                 return;
             }
         }
         //else append
-        prpK[prpLen] = new char[std::strlen(key) + 1];
-        std::strcpy(prpK[prpLen], key);
-        prpV[prpLen] = new char[std::strlen(val) + 1];
-        std::strcpy(prpV[prpLen], val);
+        prpK[prpLen] = nullptr;
+        prpV[prpLen] = nullptr;
+        SetStr(prpK[prpLen], key);
+        SetStr(prpV[prpLen], val);
 
         ++prpLen;
     }
