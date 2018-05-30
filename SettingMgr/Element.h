@@ -3,21 +3,28 @@
 class Element
 {
 public:
-    Element();
+    Element(char* elemName = nullptr, char* elemText = nullptr, size_t propReserve = 16);
     ~Element();
 
-    void SetName(char const*);
+    void        SetName(char const* elemName);
+    char*const  GetName() const;
+    void        SetText(char const* elemValue);
+    char*const  GetText() const;
 
-    void SetProperty(char const* propName, char const* propVal);
-    void SetProperty(char const* propName, int propVal);
-    void SetProperty(char const* propName, double propVal);
+    size_t      GetPropertyCount() const;
+    char**const GetPropertyKeys() const;
+    char**const GetPropertyVals() const;
+    void        SetProperty(char const* propertyKey, char const* properyValue);
+    void        SetProperty(char const* propertyKey, int properyValue, int radix = 10);
+    void        SetProperty(char const* propertyKey, double properyValue, int digitCount = 5);
 
-    void RemoveProperty(char const* propName);
+    void        RemoveProperty(char const* propertyKey);
 
-    char* Represent() const;
-protected:
+    char*       Represent() const;
+    char*       Represent(char const* txtDelim, char const* prpDelim) const;
+//protected:
     char* name;
-    char* value;
+    char* text;
 
     char** prpK;
     char** prpV;
