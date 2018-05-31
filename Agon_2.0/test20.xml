@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<settings>
+<setting name = "type">int</setting>
+<setting name = "value">22</setting>
+<setting name = "sizeof">4</setting>
+<setting name = "key_1">val_1</setting>
+<setting name = "key_2">val_2</setting>
+<setting name = "key_3">val_3</setting>
+</settings>
